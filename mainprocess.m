@@ -7,10 +7,14 @@ write = 1; %whether to output intermediate process image
 WorkPath=pwd;
 %InputPath='/Users/zz/Desktop/Iris test/Iris DB';
 InputPath=[WorkPath,'/','Iris DB'];
-%if Windows
-%savefile = [InputPath,'template.mat'];
+
 %if Mac
-savefile = [InputPath,'/','template.mat'];
+if isunix
+    savefile = [InputPath,'/','template.mat'];
+%if Windows
+else
+    savefile = [InputPath,'template.mat'];
+end
 t1 = clock;
 [templatetest, masktest] = createiristemplate('/Users/zz/Desktop/Iris test/C283_S1_I7.bmp',write);
 time_createtemplate = etime(clock, t1);
@@ -79,8 +83,11 @@ if i== NumFile
     result = FileName(k).name;
 end
 %if Windows
-Route = [InputPath,result];
+if ~isunix
+    Route = [InputPath,result];
 %if Mac
-Route = [InputPath,'/',result];
+else
+    Route = [InputPath,'/',result];
+end
 disp(['Result is ',Route]);
 time_total = etime(clock, t0);
