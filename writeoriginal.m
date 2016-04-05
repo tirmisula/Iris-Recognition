@@ -69,12 +69,14 @@ function writeoriginal(circleiris,circlepupil,eyeimage,eyeimage_filename,nscales
        
      
 %if Windows
-% pos = findstr(eyeimage_filename,'\');
-% posdot = findstr(eyeimage_filename,'.');
-% l = length(pos);
-% addpos = pos(l);
-% final_gabor_original = [eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:posdot),'\gabor_original-',eyeimage_filename(addpos+1:posdot),'.jpg'];     
-% final_gabor_lins = [eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:posdot),'\gabor_lins-',eyeimage_filename(addpos+1:posdot),'.jpg']; 
+if ~isunix
+pos = findstr(eyeimage_filename,'\');
+posdot = findstr(eyeimage_filename,'.');
+l = length(pos);
+addpos = pos(l);
+final_gabor_original = [eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:posdot),'\gabor_original-',eyeimage_filename(addpos+1:posdot),'.jpg'];     
+final_gabor_lins = [eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:posdot),'\gabor_lins-',eyeimage_filename(addpos+1:posdot),'.jpg']; 
+else
 %if Mac
 pos = findstr(eyeimage_filename,'/');
 posdot = findstr(eyeimage_filename,'.');
@@ -84,7 +86,7 @@ final_gabor_original = [eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:p
     '/gabor_original-',eyeimage_filename(addpos+1:posdot-1),'.jpg'];     
 final_gabor_lins = [eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:posdot-1),...
     '/gabor_lins-',eyeimage_filename(addpos+1:posdot-1),'.jpg']; 
-
+end
 imwrite(writeimage0,final_gabor_original,'jpg');
 imwrite(writeimage1,final_gabor_lins,'jpg');
 

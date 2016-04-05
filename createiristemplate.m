@@ -48,7 +48,7 @@ if stat == 1
     %if Windows
     %if any(strfind(savefile,'Iris DB\'))
     %if Mac
-    if any(strfind(savefile,'Iris DB/'))
+    if any(strfind(savefile,['Iris DB',filesep]))
     load(savefile);
     else
 %     [circleiris circlepupil imagewithnoise] = segmentiris(eyeimage);
@@ -110,29 +110,31 @@ imagewithcircles(ind1) = 255;
 %if Windows
 %pos = findstr(eyeimage_filename,'\');
 %if Mac
-pos = findstr(eyeimage_filename,'/');
+pos = findstr(eyeimage_filename,filesep);
 posdot = findstr(eyeimage_filename,'.');
 l = length(pos);
 addpos = pos(l);
 %if Windows
-%final_segmented = [eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:posdot),'\segmented-',eyeimage_filename(addpos+1:posdot),'.jpg'];
+if ~isunix
+final_segmented = [eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:posdot),'\segmented-',eyeimage_filename(addpos+1:posdot),'.jpg'];
+mkdir(strrep([eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:posdot),'\'],'\','/'));
+else
 %if Mac
 final_segmented = [eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:posdot-1),'/segmented-',eyeimage_filename(addpos+1:posdot-1),'.jpg'];
-%if Windows
-%mkdir(strrep([eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:posdot),'\'],'\','/'));
-%If Mac
 mkdir(strrep([eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:posdot-1),'/'],'\','/'));
-
+end
 imwrite(imagewithcircles,final_segmented,'jpg');
 % cd(w);
 
 if write
+if ~isunix
 %if Windows
-%final_noise = [eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:posdot),'\noise-',eyeimage_filename(addpos+1:posdot),'.jpg'];    
- 
+final_noise = [eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:posdot),'\noise-',eyeimage_filename(addpos+1:posdot),'.jpg'];    
+else 
 %if Mac
 final_noise = [eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:posdot-1),'/noise-',eyeimage_filename(addpos+1:posdot-1),'.jpg'];    
 imwrite(imagewithnoise2,final_noise,'jpg');  
+end
 %write the *-gabor_oiginal.jpg
 
 writeoriginal(circleiris,circlepupil,eyeimage,eyeimage_filename,nscales, minWaveLength, mult, sigmaOnf);
@@ -151,15 +153,17 @@ end
 % cd(DIAGPATH);
 
 if write
+if ~isunix
 %if Windows
-% final_polar = [eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:posdot),'\polar-',eyeimage_filename(addpos+1:posdot),'.jpg'];
-% final_polarnoise = [eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:posdot),'\polarnoise-',eyeimage_filename(addpos+1:posdot),'.jpg'];
+final_polar = [eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:posdot),'\polar-',eyeimage_filename(addpos+1:posdot),'.jpg'];
+final_polarnoise = [eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:posdot),'\polarnoise-',eyeimage_filename(addpos+1:posdot),'.jpg'];
+else
 %if Mac
 final_polar = [eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:posdot-1),...
     '/polar-',eyeimage_filename(addpos+1:posdot-1),'.jpg'];
 final_polarnoise = [eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:posdot-1),...
 '/polarnoise-',eyeimage_filename(addpos+1:posdot-1),'.jpg'];
-
+end
 %mkdir(strrep([eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:posdot),'\'],'\','/'));
 %mkdir(strrep([eyeimage_filename(1:addpos),eyeimage_filename(addpos+1:posdot),'\'],'\','/'));
 imwrite(polar_array,final_polar,'jpg');

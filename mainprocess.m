@@ -7,7 +7,7 @@ write = 1; %whether to output intermediate process image
 WorkPath=pwd;
 %InputPath='/Users/zz/Desktop/Iris test/Iris DB';
 InputPath=[WorkPath,'/','Iris DB'];
-
+InputPath_=fullfile(WorkPath,'Iris DB');
 %if Mac
 if isunix
     savefile = [InputPath,'/','template.mat'];
@@ -21,13 +21,13 @@ time_createtemplate = etime(clock, t1);
 %generate or load Iris feature library
 [stae,mess]=fileattrib(savefile);
 %if Windows
-%FileName=dir(strcat(InputPath,'*.bmp'));
+%FileName_bmp=dir(strcat(InputPath,'*.bmp'));
 %if Mac
-FileName=dir(strcat(InputPath,'/','*.bmp'));
-FileName_=dir(strcat(InputPath,'/','*.jpg'));
-FN=[FileName;FileName_];
+FileName_bmp=dir(strcat(InputPath,'/','*.bmp'));
+FileName_jpg=dir(strcat(InputPath,'/','*.jpg'));
+FN=[FileName_bmp;FileName_jpg];
 %FN=
-NumFile=length(FileName);
+NumFile=length(FN);
 if stae
     load(savefile);
     % if DB File number doesn't match template, rebuild template.mat
@@ -39,20 +39,23 @@ if stae
         rebuilt = 1;
     end
 else
+    % or template.mat doesn't exist
     rebuilt = 1;
 end
 if rebuilt
     t2 = clock;
     %if Windows
-    %FileName=dir(strcat(InputPath,'*.bmp'));
+    %FileName_bmp=dir(strcat(InputPath,'*.bmp'));
     %if Mac
-    FileName=dir(strcat(InputPath,'/','*.bmp'));
-    NumFile=length(FileName);
+    FileName_bmp=dir(strcat(InputPath,'/','*.bmp'));
+    FileName_jpg=dir(strcat(InputPath,'/','*.jpg'));
+    FN=[FileName_bmp;FileName_jpg];
+    NumFile=length(FN);
     [row,clo] = size(templatetest);
     template = zeros(row,clo,NumFile);
     mask = zeros(row,clo,NumFile);
     for i=1:NumFile
-        tempFileName=FileName(i).name;
+        tempFileName=FN(i).name;
         %if Windows
         %ImPath=strcat(InputPath,tempFileName);
         %if Mac
@@ -62,7 +65,7 @@ if rebuilt
         mask(:,:,i) = mask_temp;
     end
     
-    save(savefile,'template','mask','FileName');
+    save(savefile,'template','mask','FN');
     time_rebuiltDataBase = etime(clock, t2);
 end
 %measure Hemming diatance
@@ -72,7 +75,7 @@ for i=1:NumFile
     hd(i) = gethammingdistance(templatetest, masktest, template(:,:,i), mask(:,:,i), 4);
     if hd(i) < hmthresh
 
-        result =FileName(i).name;
+        result =FN(i).name;
         break;
     end
 
@@ -80,7 +83,7 @@ end
 
 if i== NumFile
     k = find(hd==min(hd));
-    result = FileName(k).name;
+    result = FN(k).name;
 end
 %if Windows
 if ~isunix
