@@ -16,7 +16,7 @@ else
     savefile = [InputPath,'template.mat'];
 end
 t1 = clock;
-[templatetest, masktest] = createiristemplate('/Users/zz/Desktop/Iris test/C283_S1_I7.bmp',write);
+[templatetest, masktest] = createiristemplate('/Users/zz/Desktop/Iris test/standard_L.jpg',write);
 time_createtemplate = etime(clock, t1);
 %generate or load Iris feature library
 [stae,mess]=fileattrib(savefile);

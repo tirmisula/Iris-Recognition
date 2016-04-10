@@ -22,11 +22,13 @@ R=rmin:rmax;
 count=size(R,2);
 for k=1:count
 [L(k)]=lineint(I,C,R(k),n,part);%computing the normalized line integral for each radius
-if L(k)==0%if L(k)==0(this case occurs iff the radius takes the circle out of the image)
+if L(k)==0%if L(k)==0(this case occurs iff the radius takes the circle out of the image or image region totally is black)
     %In this case,L is deleted as shown below and no more radii are taken for computation
     %(for that particular centre point).This is accomplished using the break statement
-     L(k)=[];
+    if strcmp(part,'iris')==1
+    L(k)=[];
     break;
+    end
 end
 end
 D=diff(L);

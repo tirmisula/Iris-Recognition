@@ -16,7 +16,7 @@
 %ci:the parametrs[xc,yc,r] of the limbic boundary
 %out:the segmented image
 
-function [ci,cp,out]=thresh(I,rmin,rmax);
+function [ci,cp,out]=thresh(I,rmin,rmax,varargin);
 
 scale=1;
 stdsize=[300,400];
@@ -75,15 +75,79 @@ for j=1:N
     maxb(X(j),Y(j))=b;
     maxrad(X(j),Y(j))=r;
 end
+% find local max
+% temp=1;
+% bin=20;
+% for i=1:1:cols
+%     if ~(temp+bin>cols)
+%         if temp+bin==cols
+%             [localmax(i).x,localmax(i).y]=find(maxb==max(max(maxb(:,temp:cols))));
+%             temp=cols;
+%             break;
+%         end
+%         if temp+bin<cols
+%         [localmax(i).x,localmax(i).y]=find(maxb==max(max(maxb(:,temp:temp+bin))));
+%         temp=temp+bin+1;
+%         end
+%     else
+%         [localmax(i).x,localmax(i).y]=find(maxb==max(max(maxb(:,temp:cols))));
+%         temp=cols;
+%         break;
+%     end
+% end
+maxb_=maxb;
+x_=0;
+y_=0;
+persistent count;
+count=0;
+for i=1:1:Inf
+    [x,y]=find(maxb_==max(max(maxb_)));
+%     if abs(x-x_)+abs(y-y_)<=20
+%         maxb_(x,y)=NaN;
+%         continue;
+    %else
+        maxb_(x,y)=NaN;
+        for xj=(x-10):(x+10)
+            for yj=(y-10):(y+10)
+                maxb_(xj,yj)=NaN;
+            end
+        end
+        X_peak(count+1)=x;
+        Y_peak(count+1)=y;
+        x_=x;
+        y_=y;
+        count=count+1;
+        if count==3
+            break;
+        end
+    %end
+end
+Y1=Y_peak(1);
+Y2=Y_peak(2);
+Y3=Y_peak(3);
+X1=X_peak(1);
+X2=X_peak(2);
+X3=X_peak(3);
+I1=I(X1-5:X1+5,Y1-5:Y1+5);
+I2=I(X2-5:X2+5,Y2-5:Y2+5);
+I3=I(X3-5:X3+5,Y3-5:Y3+5);
+[minValue,ind]=min([mean2(I1) mean2(I2) mean2(I3)]);
+if numel(ind)~=1
+    ind=ind(1);
+end
+% Y_peak_high=sort(Y_peak);
+% ind=find(Y_peak==Y_peak_high(3));
+
 [x,y]=find(maxb==max(max(maxb)));
-ci=search(I,rmin,rmax,x,y,'iris');%fine search
+ci=search(I,rmin,rmax,X_peak(ind),Y_peak(ind),'iris');
+%ci=search(I,rmin,rmax,x,y,'iris');%fine search
 %finds the maximum value of blur by scanning all the centre coordinates
 ci=ci/scale;
 %the function search searches for the centre of the pupil and its radius
 %by scanning a 10*10 window around the iris centre for establishing 
 %the pupil's centre and hence its radius
-cp=search(I,round(0.1*r),round(0.8*r),ci(1)*scale,ci(2)*scale,'pupil');%Ref:Daugman's paper that sets biological limits on the relative sizes of the iris and pupil
-%cp=search(I,round(0.1*ci(3)),round(0.8*ci(3)),ci(1)*scale,ci(2)*scale,'pupil');%Ref:Daugman's paper that sets biological limits on the relative sizes of the iris and pupil
+%cp=search(I,round(0.1*r),round(0.8*r),ci(1)*scale,ci(2)*scale,'pupil');%Ref:Daugman's paper that sets biological limits on the relative sizes of the iris and pupil
+cp=search(I,round(0.1*ci(3)),round(0.8*ci(3)),ci(1)*scale,ci(2)*scale,'pupil');%Ref:Daugman's paper that sets biological limits on the relative sizes of the iris and pupil
 
 cp=cp/scale;
 %displaying the segmented image

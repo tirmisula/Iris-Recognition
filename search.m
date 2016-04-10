@@ -18,9 +18,9 @@ sigma=0.5;%(standard deviation of Gaussian)
 R=rmin:rmax;
 maxrad=zeros(rows,cols);
 maxb=zeros(rows,cols);
-if strcmp(option,'pupil')==1
-im=adjgamma(im,5);
-end
+% if strcmp(option,'pupil')==1
+% im=adjgamma(im,5);
+% end
 
 for i=(x-5):(x+5)
     for j=(y-5):(y+5)
